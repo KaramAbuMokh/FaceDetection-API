@@ -106,7 +106,7 @@ class App extends React.Component {
             detectRetina: true,
           }}
         />
-        <NavBar />
+        <NavBar page={this.state.page} />
         {this.state.page === "signin" || this.state.page === "register" ? (
           <div>
             <LoginRegister
