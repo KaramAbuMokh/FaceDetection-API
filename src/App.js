@@ -106,21 +106,23 @@ class App extends React.Component {
             detectRetina: true,
           }}
         />
-        <NavBar page={this.state.page} />
-        {this.state.page === "signin" || this.state.page === "register" ? (
-          <div>
-            <LoginRegister
-              style={{ position: "absolute" }}
-              page={this.state.page}
-              changePage={this.changePage}
-            />
-          </div>
-        ) : (
-          <div>
-            <Logo />
-            <Form />
-          </div>
-        )}
+        <div className="flex flex-column">
+          <NavBar changePage={this.changePage} page={this.state.page} />
+          {this.state.page === "signin" || this.state.page === "register" ? (
+            <div>
+              <LoginRegister
+                style={{ position: "absolute" }}
+                page={this.state.page}
+                changePage={this.changePage}
+              />
+            </div>
+          ) : (
+            <div>
+              <Logo />
+              <Form />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
