@@ -1,5 +1,4 @@
 import React from "react";
-import Logo from "./Logo";
 import NavBar from "./NavBar";
 import Form from "./Form";
 import LoginRegister from "./LoginRegister";
@@ -118,7 +117,6 @@ class App extends React.Component {
             </div>
           ) : (
             <div>
-              <Logo />
               <Form />
             </div>
           )}
