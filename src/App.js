@@ -1,6 +1,7 @@
 import React from "react";
 import NavBar from "./NavBar";
 import Form from "./Form";
+import FormByLink from './FormByLink'
 import LoginRegister from "./LoginRegister";
 import Particles from "react-tsparticles";
 import "./App.css";
@@ -117,7 +118,11 @@ class App extends React.Component {
             </div>
           ) : (
             <div>
-              <Form />
+              {
+                this.state.page === 'ByLocalFile' ? <Form/> : (
+                  this.state.page ==='ByLink' ? <FormByLink/> : null
+                )
+              }
             </div>
           )}
         </div>
