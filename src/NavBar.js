@@ -2,15 +2,37 @@ import React from "react";
 import Logo from "./Logo";
 
 class NavBar extends React.Component {
+  
   constructor(props) {
     super(props);
+
+    this.setState({
+      authorized:false
+    })
   }
+
   render() {
+
     return (
       <div className="flex justify-between">
         <Logo />
-        {this.props.page === "home" ? (
-          <div className="ma3 ">
+        {this.props.page==='home' || this.props.page==='ByLink' || this.props.page==='ByLocalFile' ? (
+          <div className="ma3 flex justify-between">
+            
+            <a
+              onClick={() => this.props.changePage("ByLink")}
+              href="#0"
+              className="f3 ma2 pa2 w4 ba link dim black db"
+            >
+              By Link
+            </a>
+            <a
+              onClick={() => this.props.changePage("ByLocalFile")}
+              href="#0"
+              className="f3 ma2 pa2 w4 ba link dim black db"
+            >
+              By Local File
+            </a>
             <a
               onClick={() => this.props.changePage("signin")}
               href="#0"

@@ -3,7 +3,7 @@ import Clarifai from "clarifai";
 
 
 
-class Form extends React.Component {
+class FormByLink extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
@@ -22,49 +22,18 @@ class Form extends React.Component {
   }
 
   linkChange(event) {
-
-
-    this.setState({faceBox:[],boundingBoxes:[]})
-    let { file } = this.state;
-    file = event.target.files[0];
-
-    this.getBase64(file)
-    .then(result => {
-      console.log('result is', result)
-      file["base64"] = result;
-      console.log("File Is", file);
-      this.setState({
-        base64URL: result.replace('data:image/jpeg;base64,',''),
-        file
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
-
     this.setState({
-      file:  URL.createObjectURL(event.target.files[0])
-    });
-
-  
-    console.log(this.state.file);
+      imageLink: "",
+      file:null,
+      faceBox:[],
+      boundingBoxes:[],
+      base64URL:"",
+      showBoxes:false,
+      renderedOutput:null
+    })
+    this.setState({imageLink:event.target.value})
     event.target.value === '' ? this.setState({showBoxes : false,boundingBoxes:[],faceBox:[]}) : this.setState({showBoxes : true})
   }
-
-  getBase64 = file => {
-    return new Promise(resolve => {
-      let baseURL = "";
-      let reader = new FileReader();
-
-      reader.readAsDataURL(file);
-
-      reader.onload = () => {
-        // Make a fileInfo Object
-        baseURL = reader.result;
-        resolve(baseURL);
-      };
-    });
-  };
 
   boundface = (boundingBox) => {
     
@@ -72,9 +41,7 @@ class Form extends React.Component {
       boundingBoxes: this.state.boundingBoxes.concat([boundingBox])
     })
 
-
     const image = document.getElementById("myimg");
-    //image.setAttribute("src",'data:image/jpeg;base64,'+this.state.base64URL)
     const width = Number(image.width);
     const height = Number(image.height);
     this.setState({ 
@@ -106,7 +73,7 @@ class Form extends React.Component {
         {
           data: {
             image: {
-              base64: `${this.state.base64URL}`,
+                url: `${this.state.imageLink}`,
             },
           },
         },
@@ -151,10 +118,8 @@ class Form extends React.Component {
   }
 
   refresh=()=>{
-    let input=document.getElementById('input');
-    input.value=null
-    let inputForm=document.getElementById('inputForm');
-    inputForm.reset()
+    let a=document.querySelector('input');
+    a.value=''
     this.setState({
       imageLink: "",
       file:null,
@@ -169,41 +134,34 @@ class Form extends React.Component {
   render() {
     return (
       <div className="flex flex-column items-center">
-        <div >
-          <form id='inputForm'>
-            <a
+        <div>
+        <a
               onClick={this.refresh}
               href="#0"
               className="f3 ma2 pa2 w4 ba link dim black db"
             >
               refresh
             </a>
-          </form>
         </div>
-
-
-        <div className=" w-25 pa3 ">
-          <input id='input' type='file' name='file' onChange={this.linkChange}/>
-          <button onClick={this.predict}>Predict</button>
-        </div>
-
-
-        <div className=" ma0  w-50">
-          <div  className="absolute ma3  w-50">
-          <img id="myimg" src={this.state.file===null ? null: 'data:image/jpeg;base64,'+this.state.base64URL}  />
-          <div>
-            {this.state.showBoxes ? this.state.renderedOutput : <div></div>}
+          <div  className=" w-25 pa2 ">
+            <input id='input' type='text' name='url' onChange={this.linkChange}/>
+            <button onClick={this.predict}>Predict</button>
           </div>
-        </div>
-        </div>
-
-        
 
 
+          <div className=" ma0  w-50">
+            <div  className="absolute ma3  w-50">
+              <img  id="myimg" src={this.state.imageLink}  />
+              <div>
+                {this.state.showBoxes ? this.state.renderedOutput : <div></div>}
+              </div>
+            </div>
+          </div>
 
+          
       </div>
     );
   }
 }
 
-export default Form;
+export default FormByLink;
