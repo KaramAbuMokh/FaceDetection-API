@@ -1,5 +1,6 @@
 import React from "react";
 import Clarifai from "clarifai";
+import HistoryImages from './HistoryImages'
 
 
 
@@ -15,7 +16,9 @@ class Form extends React.Component {
       showBoxes:false,
       renderedOutput:null, 
       file:null,
-      base64URL: ""
+      base64URL: "",
+      score:this.props.user.score,
+      history:this.props.user.history
     };
     this.linkChange = this.linkChange.bind(this);    
     this.predict = this.predict.bind(this);
@@ -23,31 +26,29 @@ class Form extends React.Component {
 
   linkChange(event) {
 
+  if(this.state.file!=='transFile'){
+      this.setState({faceBox:[],boundingBoxes:[]})
+      let { file } = this.state;
+      file = event.target.files[0];
 
-    this.setState({faceBox:[],boundingBoxes:[]})
-    let { file } = this.state;
-    file = event.target.files[0];
-
-    this.getBase64(file)
-    .then(result => {
-      console.log('result is', result)
-      file["base64"] = result;
-      console.log("File Is", file);
-      this.setState({
-        base64URL: result.replace('data:image/jpeg;base64,',''),
-        file
+      this.getBase64(file)
+      .then(result => {
+        file["base64"] = result;
+        this.setState({
+          base64URL: result.replace('data:image/jpeg;base64,',''),
+          file
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    })
-    .catch(err => {
-      console.log(err);
-    });
 
-    this.setState({
-      file:  URL.createObjectURL(event.target.files[0])
-    });
-
+      this.setState({
+        file:  URL.createObjectURL(event.target.files[0]),
+        type:'file'
+      });
+    }
   
-    console.log(this.state.file);
     event.target.value === '' ? this.setState({showBoxes : false,boundingBoxes:[],faceBox:[]}) : this.setState({showBoxes : true})
   }
 
@@ -94,6 +95,33 @@ class Form extends React.Component {
   };
 
 
+  addToScore(){
+
+    fetch('http://localhost:8000/image',{
+      method: 'post',
+      headers: {'Content-Type' : 'application/json'},
+      body:JSON.stringify({
+        id: this.props.user.id,
+        image: {
+          type:'file',
+          data: this.state.file.base64
+        }
+      })
+    })
+    .then(response => response.json())
+    .then( data => {
+
+      let user=this.props.user
+      user.history=data.history
+      user.score=data.score
+      this.props.setUser(user)
+      
+      this.setState({score:data.score, history:data.history})
+
+    })
+  }
+
+
 
   predict() {
 
@@ -132,7 +160,6 @@ class Form extends React.Component {
     )
       .then((response) => response.text())
       .then((result) =>{
-        console.log(JSON.parse(result).outputs[0]);
         let regs=JSON.parse(result).outputs[0].data.regions
 
         regs.forEach(box => {
@@ -140,6 +167,17 @@ class Form extends React.Component {
             this.boundface(box.region_info.bounding_box)
           }
         });
+
+        let found=false
+        this.state.history.forEach(item =>{
+          if(item.type==='file' && this.state.file.base64===item.data){
+            found=true
+          }
+        }) 
+
+        if(!found){
+          this.addToScore()
+        }
       })
       .catch((error) => console.log("error", error));
   }
@@ -156,19 +194,32 @@ class Form extends React.Component {
     let inputForm=document.getElementById('inputForm');
     inputForm.reset()
     this.setState({
-      imageLink: "",
       file:null,
       faceBox:[],
       boundingBoxes:[],
       base64URL:"",
-      showBoxes:false,
       renderedOutput:null
+    })
+  }
+
+  changePath=(link,type)=>{
+    this.refresh()
+
+    this.setState({
+      base64URL:link, 
+      showBoxes:true,
+      type:type,
+      file:'transFile'
     })
   }
   
   render() {
+    console.log(this.state)
     return (
       <div className="flex flex-column items-center">
+        <div>
+          <h1>{this.state.score}</h1>
+        </div>
         <div >
           <form id='inputForm'>
             <a
@@ -188,19 +239,16 @@ class Form extends React.Component {
         </div>
 
 
-        <div className=" ma0  w-50">
-          <div  className="absolute ma3  w-50">
-          <img id="myimg" src={this.state.file===null ? null: 'data:image/jpeg;base64,'+this.state.base64URL}  />
+        <div className=" ma0 w-50">
+          <div  className="relative mh0  w-100">
+          <img id="myimg" src={this.state.file===null ? (null): (this.state.type==='link' ? this.state.base64URL : 'data:image/jpeg;base64,'+this.state.base64URL)} />
           <div>
             {this.state.showBoxes ? this.state.renderedOutput : <div></div>}
           </div>
         </div>
         </div>
 
-        
-
-
-
+        <HistoryImages setLink={this.changePath} history={this.props.history}/>
       </div>
     );
   }

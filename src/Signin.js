@@ -5,6 +5,46 @@ import Tilt from "react-tilt";
 class Signin extends React.Component {
   constructor(props) {
     super(props);
+    this.state={
+      email:'',
+      password:''
+    }
+    this.setEmail = this.setEmail.bind(this);
+    this.setPassword = this.setPassword.bind(this);
+    this.signIn = this.signIn.bind(this);
+  }
+
+  setEmail(e){
+    this.setState({email: e.target.value})
+  }
+
+  setPassword(e){
+    this.setState({password : e.target.value})
+  }
+  
+
+  signIn(e){
+
+    e.preventDefault()
+
+    fetch('http://localhost:8000/signin',{
+      method: 'post',
+      headers: {'Content-Type' : 'application/json'},
+      body:JSON.stringify({
+        email: this.state.email,
+        password:this.state.password
+      })
+    })
+    .then(response => response.json())
+    .then( data => {
+      console.log(data)
+      if(data==='fail'){
+        alert('email or password is not correct')
+      }else{
+        this.props.setUser(data)
+        this.props.changePage("home")
+      }
+    })    
   }
 
   render() {
@@ -27,6 +67,7 @@ class Signin extends React.Component {
                       Email
                     </label>
                     <input
+                      onChange={this.setEmail}
                       className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                       type="email"
                       name="email-address"
@@ -38,6 +79,7 @@ class Signin extends React.Component {
                       Password
                     </label>
                     <input
+                      onChange={this.setPassword}
                       className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                       type="password"
                       name="password"
@@ -46,7 +88,7 @@ class Signin extends React.Component {
                   </div>
                   <div className="">
                     <input
-                      onClick={() => this.props.changePage("home")}
+                      onClick={this.signIn}
                       className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
                       type="submit"
                       value="Sign in"

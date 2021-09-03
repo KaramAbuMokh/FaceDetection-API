@@ -1,0 +1,21 @@
+.grid3cols{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; 
+    justify-content: space-between;
+}
+
+.wlad:hover{
+    padding: 0;
+}
+
+.wlad{
+    padding: 30px;
+    margin:40px;
+    border-radius: 15px;
+    background-color: rgba(241, 224, 224, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: padding 0.3s ease-out;
+}
+

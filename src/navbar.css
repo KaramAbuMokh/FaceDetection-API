@@ -1,0 +1,22 @@
+.navbar {
+    position: fixed;
+    background-color: white;
+    width: 100%;
+}
+  
+.navbar-content {
+    text-decoration: underline;
+    width: 350px;
+
+    grid-template-columns: 1fr 1fr 1fr; 
+    justify-content: space-between;
+}
+
+.logout{
+    color: rgb(126, 0, 0);
+    transition: color 0.3s ease-in-out;
+}
+
+.logout:hover{
+    color: rgb(255, 95, 95);
+}

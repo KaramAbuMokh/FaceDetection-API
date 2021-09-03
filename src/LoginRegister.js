@@ -13,7 +13,7 @@ class LoginRegister extends React.Component {
       <div>
         {this.props.page === "signin" ? (
           <div>
-            <Signin changePage={this.props.changePage} />
+            <Signin setUser={this.props.setUser} changePage={this.props.changePage} />
           </div>
         ) : (
           <div>

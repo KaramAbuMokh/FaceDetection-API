@@ -6,17 +6,30 @@ import LoginRegister from "./LoginRegister";
 import Particles from "react-tsparticles";
 import "./App.css";
 
+
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       page: "signin",
+      user:"",
+      history:null,
     };
+    
     this.changePage = this.changePage.bind(this);
+    this.setUser = this.setUser.bind(this);
   }
 
   changePage(pageName) {
     this.setState({ page: pageName });
+  }
+
+  setUser=(user)=>{
+    this.setState({
+      user:user,
+      history:user.history
+    })
+    
   }
 
   render() {
@@ -30,7 +43,7 @@ class App extends React.Component {
           options={{
             background: {
               color: {
-                value: "#A52A2A",
+                value: "#ffffff",
               },
             },
             fpsLimit: 150,
@@ -65,10 +78,10 @@ class App extends React.Component {
             },
             particles: {
               color: {
-                value: "#aaa000",
+                value: "#0000a0",
               },
               links: {
-                color: "#0afaff",
+                color: "#0000ff",
                 distance: 80,
                 enable: true,
                 opacity: 0.5,
@@ -109,20 +122,22 @@ class App extends React.Component {
         <div className="flex flex-column">
           <NavBar changePage={this.changePage} page={this.state.page} />
           {this.state.page === "signin" || this.state.page === "register" ? (
-            <div>
+            <div  className='ma6'>
               <LoginRegister
+                setUser={this.setUser}
                 style={{ position: "absolute" }}
                 page={this.state.page}
                 changePage={this.changePage}
               />
             </div>
           ) : (
-            <div>
+            <div className='ma6'>
               {
-                this.state.page === 'ByLocalFile' ? <Form/> : (
-                  this.state.page ==='ByLink' ? <FormByLink/> : null
+                this.state.page === 'ByLocalFile' ? <Form history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : (
+                  this.state.page ==='ByLink' ? <FormByLink history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : null
                 )
               }
+              
             </div>
           )}
         </div>
