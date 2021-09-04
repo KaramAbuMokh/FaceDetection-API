@@ -33,9 +33,6 @@ class FormByLink extends React.Component {
     })
     this.setState({imageLink:event.target.value})
     event.target.value === '' ? this.setState({showBoxes : false,boundingBoxes:[],faceBox:[]}) : this.setState({showBoxes : true})
-
-
-    console.log(this.state.imageLink)
   }
 
   boundface = (boundingBox) => {

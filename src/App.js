@@ -132,12 +132,12 @@ class App extends React.Component {
             </div>
           ) : (
             <div className='ma6'>
-              {
-                this.state.page === 'ByLocalFile' ? <Form history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : (
+              {/* {
+                this.state.page === 'ByLocalFile' ? <Form page={this.state.page} history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : (
                   this.state.page ==='ByLink' ? <FormByLink history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : null
                 )
-              }
-              
+              } */}
+              <Form page={this.state.page} history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/>
             </div>
           )}
         </div>
