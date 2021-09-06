@@ -9,7 +9,7 @@ class Button extends React.Component{
     render(){
         return (
             <a
-              onClick={this.props.func}
+              onClick={()=>this.props.func()}
               href="#0"
               className="f3 mh5 mv1 pa2 w4 ba link dim black db"
             >

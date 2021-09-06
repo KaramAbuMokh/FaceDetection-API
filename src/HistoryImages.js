@@ -20,7 +20,7 @@ class HistoryImages extends React.Component{
       }
 
     render(){
-        let images = this.props.history.map((item,i) =><div key={i}  className='wlad'><img onClick={this.props.page==='home'?null:()=>this.props.setData(item.data,item.type)} key={`${i}`} src={item.data} /></div>  )
+        let images = this.props.history.map((item,i) =><div key={i}  className='wlad'><img onClick={this.props.page==='home'?null:()=>this.props.setData(item.data,item.type,item.faceBox)} key={`${i}`} src={item.data} /></div>  )
 
         return (
             <div key={this.props.history} className='grid3cols'>

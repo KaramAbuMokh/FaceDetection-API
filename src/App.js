@@ -137,7 +137,7 @@ class App extends React.Component {
                   this.state.page ==='ByLink' ? <FormByLink history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/> : null
                 )
               } */}
-              <Form page={this.state.page} history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/>
+              <Form changePage={this.changePage} page={this.state.page} history={this.state.history} link={this.state.link} user={this.state.user} setUser={this.setUser}/>
             </div>
           )}
         </div>

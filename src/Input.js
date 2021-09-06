@@ -8,8 +8,6 @@ class Input extends React.Component{
     }
 
     render(){
-        console.log(this.props)
-
         return  <div key={this.props.type}>
             {this.props.type==='text'? 
             (
@@ -28,7 +26,8 @@ class Input extends React.Component{
                         id='file' 
                         className='mv1 inputfile' 
                         key={this.props.type} 
-                        type='file' name='file' 
+                        type='file' 
+                        name='file' 
                         onChange={this.props.onChange}
                         hidden='true'
                     />

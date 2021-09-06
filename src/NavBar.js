@@ -19,7 +19,13 @@ class NavBar extends React.Component {
         <Logo />
         {this.props.page==='home' || this.props.page==='ByLink' || this.props.page==='ByLocalFile' ? (
           <div className="navbar-content ma3 flex justify-center">
-            
+            <a
+              onClick={() => this.props.changePage("home")}
+              href="#0"
+              className="f3 ma2 pv2 link dim  db logout"
+            >
+              Home
+            </a>
             <a
               onClick={() => this.props.changePage("ByLink")}
               href="#0"
@@ -41,6 +47,7 @@ class NavBar extends React.Component {
             >
               Logout
             </a>
+            
           </div>
         ) : (
           <div className="navbar-content  ma3 flex justify-center">
