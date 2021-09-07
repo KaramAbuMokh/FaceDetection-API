@@ -1,54 +1,57 @@
 import React from "react";
 import Clarifai from "clarifai";
+import HistoryImages from './HistoryImages'
+import MainImage from "./MainImage";
+import Button from './Button'
+import Input from './Input'
+import { hslToHsv } from "tsparticles/Utils";
 
 
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      imageLink: "", 
-      faceBox: [] , 
-      boundingBoxes:[] , 
-      width: 0, 
-      height:0, 
-      showBoxes:false,
-      renderedOutput:null, 
-      file:null,
-      base64URL: ""
-    };
+
+    this.state={
+        score:props.user.score,
+        history:props.history,
+        faceBox:[],
+        showMainImage:false,
+        data:null,
+        mainImageType:null,
+        fromHistory:false,
+        showInput:false,
+        page:props.page,
+        inputType:null
+      }
+
+
     this.linkChange = this.linkChange.bind(this);    
-    this.predict = this.predict.bind(this);
+    this.addToScore = this.addToScore.bind(this);
+    this.refresh = this.refresh.bind(this);
+    this.fileChange = this.fileChange.bind(this);
   }
 
+
   linkChange(event) {
-
-
-    this.setState({faceBox:[],boundingBoxes:[]})
-    let { file } = this.state;
-    file = event.target.files[0];
-
-    this.getBase64(file)
-    .then(result => {
-      console.log('result is', result)
-      file["base64"] = result;
-      console.log("File Is", file);
-      this.setState({
-        base64URL: result.replace('data:image/jpeg;base64,',''),
-        file
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
-
     this.setState({
-      file:  URL.createObjectURL(event.target.files[0])
-    });
+      faceBox:[],
+      showMainImage:true,
+      data:event.target.value,
+      mainImageType:'link',
+      fromHistory:false
+    })
+  }
 
-  
-    console.log(this.state.file);
-    event.target.value === '' ? this.setState({showBoxes : false,boundingBoxes:[],faceBox:[]}) : this.setState({showBoxes : true})
+
+  fileChange(event) {
+    this.getBase64(event.target.files[0]).then(result=>{this.setState({data:result.replace('data:image/jpeg;base64,','')} )})
+    this.setState({
+      faceBox:[],
+      showMainImage:true,
+      mainImageType:'file',
+      fromHistory:false,
+    })
   }
 
   getBase64 = file => {
@@ -66,141 +69,164 @@ class Form extends React.Component {
     });
   };
 
-  boundface = (boundingBox) => {
-    
-    this.setState({ 
-      boundingBoxes: this.state.boundingBoxes.concat([boundingBox])
-    })
+  addToScore(){
+    for (let index = 0; index < this.state.history.length; index++) {
+      const element = this.state.history[index];
+      if(this.state.data===element.data){
+        
+        this.setState({faceBox:element.faceBox})
+        return
+      }
+    }
 
-
-    const image = document.getElementById("myimg");
-    //image.setAttribute("src",'data:image/jpeg;base64,'+this.state.base64URL)
-    const width = Number(image.width);
-    const height = Number(image.height);
-    this.setState({ 
-      width,height
-    })
-    const bounds = {
-      leftCol: Number(boundingBox.left_col)  ,
-      topRow: Number(boundingBox.top_row),
-      bottomRow: Number(boundingBox.bottom_row) ,
-      rightCol: Number(boundingBox.right_col) ,
-    };
-
-    this.setState({
-      faceBox: this.state.faceBox.concat([bounds])
-    })
-    
-  };
-
-
-
-  predict() {
-
-    const raw = JSON.stringify({
-      user_app_id: {
-        user_id: "uosuofuwu6u4",
-        app_id: "facedetection-api",
-      },
-      inputs: [
-        {
-          data: {
-            image: {
-              base64: `${this.state.base64URL}`,
-            },
-          },
-        },
-      ],
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: "Key 4c390cc6f8f34410a26abff203033808",
-      },
-      body: raw,
-    };
-
-    // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-    // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-    // this will default to the latest version_id
-
-    fetch(
-      `https://api.clarifai.com/v2/models/${Clarifai.FACE_DETECT_MODEL}/outputs`,
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) =>{
-        console.log(JSON.parse(result).outputs[0]);
-        let regs=JSON.parse(result).outputs[0].data.regions
-
-        regs.forEach(box => {
-          if(box.value>0.9){
-            this.boundface(box.region_info.bounding_box)
-          }
-        });
+    fetch('http://localhost:8000/image',{
+      method: 'post',
+      headers: {'Content-Type' : 'application/json'},
+      body:JSON.stringify({
+        id: this.props.user.id,
+        type:this.state.mainImageType,
+        data: this.state.data
+        
       })
-      .catch((error) => console.log("error", error));
-  }
+    })
+    .then(response => response.json())
+    .then( data => {
 
-  static getDerivedStateFromProps(props, state){
-    const {faceBox} = state
-    let boxesDivs = faceBox.map((item,i) => <div key={i} className='bounding-box' style={{top: (faceBox[i].topRow*100)+'%', bottom: (100-faceBox[i].bottomRow*100)+'%' , left: (faceBox[i].leftCol*100)+'%', right: (100-faceBox[i].rightCol*100)+'%' }}></div> )
-    return {renderedOutput:boxesDivs}
+      let user=this.props.user
+      user.history=data.history
+      user.score=data.score
+      this.props.setUser(user)
+      
+      this.setState({score:data.score, history:data.history,faceBox:data.faceBox})
+    })
+    .catch(err=>console.log('errrr:',err))
   }
 
   refresh=()=>{
-    let input=document.getElementById('input');
-    input.value=null
-    let inputForm=document.getElementById('inputForm');
-    inputForm.reset()
+    let input=null
+    if(this.state.inputType==='text'){
+      input=document.getElementById('text');
+      input.value=null
+      
+    }else if(this.state.inputType==='file'){
+      input=document.getElementById('file');
+      input.files=null
+    }
+
     this.setState({
-      imageLink: "",
-      file:null,
       faceBox:[],
-      boundingBoxes:[],
-      base64URL:"",
-      showBoxes:false,
-      renderedOutput:null
+      showMainImage:false,
+      data:null,
+      fromHistory:false,
     })
+  }
+
+  changePath=(link,type,faceBox)=>{
+    console.log('new image')
+    this.setState({
+      showMainImage:true,
+      data:link,
+      mainImageType:type,
+      faceBox:faceBox,
+      fromHistory:true,
+    })
+
+  }
+
+
+  static getDerivedStateFromProps(props, state){
+
+    let faceBox= state.faceBox
+    let boxesDivs = faceBox.map((item,i) => <div key={i} className='bounding-box' style={{top: (item.topRow*100)+'%', bottom: (100-item.bottomRow*100)+'%' , left: (item.leftCol*100)+'%', right: (100-item.rightCol*100)+'%' }}></div> )
+    
+    // change parameters depends on the page name
+    let page=state.page
+    let score=props.user.score
+    let showMainImage=state.showMainImage
+    let data=state.data
+    let mainImageType=state.mainImageType
+    let fromHistory=state.fromHistory
+    let showInput=state.showInput
+    let inputType=state.inputType
+
+    let history=props.history
+
+
+    if(props.page!==page){
+
+      score=props.user.score
+      faceBox=[]
+      showMainImage=false
+      data=''
+      mainImageType=null
+      fromHistory=false
+      showInput=true
+      page=props.page
+    }
+    if(page==='home'){
+      inputType=null
+      showInput=false
+    }else if(page==='ByLink'){
+      inputType='text'
+    }else{
+      inputType='file'
+    }
+
+    return {
+      page,
+      score,
+      showMainImage,
+      data,
+      mainImageType,
+      faceBox,
+      fromHistory,
+      showInput,
+      page,
+      renderedOutput:boxesDivs,
+      inputType,
+      history
+    }
   }
   
   render() {
+    console.log('form class ----------: ',this.state)
     return (
-      <div className="flex flex-column items-center">
-        <div >
-          <form id='inputForm'>
-            <a
-              onClick={this.refresh}
-              href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
-            >
-              refresh
-            </a>
-          </form>
+      <div key={this.props.page} className="flex flex-column items-center">
+
+        <div>
+          <h1>{this.state.score}</h1>
         </div>
 
+        {
+          this.state.page==='home' ? (null) :
+          (
+            <div className="w-25 pa3 alignBtns">
+              <div>
+                <form id='inputForm'>
+                  <Button func={this.refresh} text='refresh' />
+                </form>
+              </div>
 
-        <div className=" w-25 pa3 ">
-          <input id='input' type='file' name='file' onChange={this.linkChange}/>
-          <button onClick={this.predict}>Predict</button>
-        </div>
+              <Button func={this.addToScore} text='Predict' />
+              <Input type={this.state.inputType} onChange={this.state.inputType==='file' ? this.fileChange : this.linkChange}/>
 
+            </div>
+          )
+        }
 
-        <div className=" ma0  w-50">
-          <div  className="absolute ma3  w-50">
-          <img id="myimg" src={this.state.file===null ? null: 'data:image/jpeg;base64,'+this.state.base64URL}  />
-          <div>
-            {this.state.showBoxes ? this.state.renderedOutput : <div></div>}
-          </div>
-        </div>
-        </div>
+        { this.state.showMainImage ? (
+              
+              <div className=" ma0 w-50 ">
+                <MainImage
+                  data={this.state.data}
+                  renderedOutput={this.state.renderedOutput}
+                  type={this.state.mainImageType}
+                />
+              </div>
+            ):(null)
+        }
 
-        
-
-
-
+        <HistoryImages page={this.state.page} setData={this.changePath} history={this.state.history}/>
       </div>
     );
   }

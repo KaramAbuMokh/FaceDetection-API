@@ -2,6 +2,63 @@ import React from "react";
 import Tilt from "react-tilt";
 
 class Register extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state={
+      email:'',
+      password:'',
+      secondPassword: ''
+    }
+    this.setEmail = this.setEmail.bind(this);
+    this.setPassword = this.setPassword.bind(this);
+    this.register = this.register.bind(this);
+    this.setSecondPassword = this.setSecondPassword.bind(this);
+  }
+
+  setEmail(e){
+    this.setState({email: e.target.value})
+  }
+
+  setPassword(e){
+    this.setState({password : e.target.value})
+  }
+
+  setSecondPassword(e){
+    this.setState({secondPassword : e.target.value})
+  }
+
+  register(e){
+
+
+    e.preventDefault()
+    if(this.state.password!==this.state.secondPassword){
+      return
+    }
+
+    fetch('http://localhost:8000/register',{
+      method: 'post',
+      headers: {'Content-Type' : 'application/json'},
+      body:JSON.stringify({
+        id: 0,
+        name:'',
+        joining : new Date,
+        email: this.state.email,
+        password:this.state.password,
+        score:0,
+        history:[]
+      })
+    })
+    .then(response => response.json())
+    .then( data => {
+      console.log(data)
+      if(data==='success'){
+        this.props.changePage("signin")
+      }
+    })
+  }
+
+
   render() {
     return (
       <Tilt
@@ -18,6 +75,7 @@ class Register extends React.Component {
                     Email
                   </label>
                   <input
+                    onChange={this.setEmail}
                     className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                     type="email"
                     name="email-address"
@@ -29,6 +87,7 @@ class Register extends React.Component {
                     Password
                   </label>
                   <input
+                    onChange={this.setPassword}
                     className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                     type="password"
                     name="password"
@@ -40,6 +99,7 @@ class Register extends React.Component {
                     Confirm Password
                   </label>
                   <input
+                    onChange={this.setSecondPassword}
                     className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                     type="password"
                     name="password"
@@ -48,6 +108,7 @@ class Register extends React.Component {
                 </div>
                 <div className="">
                   <input
+                    onClick={this.register}
                     className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
                     type="submit"
                     value="Register"
@@ -55,7 +116,7 @@ class Register extends React.Component {
                 </div>
                 <div className="lh-copy mt3">
                   <a
-                    onClick={() => this.props.changePage("signin")}
+                    onClick={()=>this.props.changePage('signin')}
                     href="#0"
                     className="f6 link dim black db"
                   >
