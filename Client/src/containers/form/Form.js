@@ -1,10 +1,8 @@
 import React from "react";
-import Clarifai from "clarifai";
-import HistoryImages from './HistoryImages'
-import MainImage from "./MainImage";
-import Button from './Button'
-import Input from './Input'
-import { hslToHsv } from "tsparticles/Utils";
+import HistoryImages from './templates/HistoryImages'
+import MainImage from "./templates/MainImage";
+import Button from './templates/Button'
+import Input from './templates/Input'
 
 
 
