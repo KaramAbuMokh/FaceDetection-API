@@ -8,7 +8,6 @@ class LoginRegister extends React.Component {
   }
 
   render() {
-    console.log("this.props.page", this.props.page);
     return (
       <div>
         {this.props.page === "signin" ? (

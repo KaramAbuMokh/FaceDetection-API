@@ -37,7 +37,6 @@ class Signin extends React.Component {
     })
     .then(response => response.json())
     .then( data => {
-      console.log(data)
       if(data==='fail'){
         alert('email or password is not correct')
       }else{

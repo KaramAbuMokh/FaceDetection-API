@@ -14,7 +14,7 @@ class Form extends React.Component {
 
     this.state={
         score:props.user.score,
-        history:[],
+        history:props.history,
         faceBox:[],
         showMainImage:false,
         data:null,
@@ -45,10 +45,10 @@ class Form extends React.Component {
 
 
   fileChange(event) {
+    this.getBase64(event.target.files[0]).then(result=>{this.setState({data:result.replace('data:image/jpeg;base64,','')} )})
     this.setState({
       faceBox:[],
       showMainImage:true,
-      data:this.getBase64(event.target.files[0]),
       mainImageType:'file',
       fromHistory:false,
     })
@@ -70,15 +70,11 @@ class Form extends React.Component {
   };
 
   addToScore(){
-
-    
-
     for (let index = 0; index < this.state.history.length; index++) {
       const element = this.state.history[index];
       if(this.state.data===element.data){
         
         this.setState({faceBox:element.faceBox})
-        console.log('ccccccccccccccc',this.state)
         return
       }
     }
@@ -96,28 +92,23 @@ class Form extends React.Component {
     .then(response => response.json())
     .then( data => {
 
-      console.log('bbbbbbbbbbb',data)
-
       let user=this.props.user
       user.history=data.history
       user.score=data.score
       this.props.setUser(user)
       
       this.setState({score:data.score, history:data.history,faceBox:data.faceBox})
-
-      console.log('after getting the facebox',this.state)
-
     })
     .catch(err=>console.log('errrr:',err))
   }
 
   refresh=()=>{
     let input=null
-    if(this.state.mainImageType==='link'){
+    if(this.state.inputType==='text'){
       input=document.getElementById('text');
       input.value=null
       
-    }else if(this.state.mainImageType==='file'){
+    }else if(this.state.inputType==='file'){
       input=document.getElementById('file');
       input.files=null
     }
@@ -131,6 +122,7 @@ class Form extends React.Component {
   }
 
   changePath=(link,type,faceBox)=>{
+    console.log('new image')
     this.setState({
       showMainImage:true,
       data:link,
@@ -138,13 +130,13 @@ class Form extends React.Component {
       faceBox:faceBox,
       fromHistory:true,
     })
+
   }
 
 
   static getDerivedStateFromProps(props, state){
 
     let faceBox= state.faceBox
-    console.log(faceBox)
     let boxesDivs = faceBox.map((item,i) => <div key={i} className='bounding-box' style={{top: (item.topRow*100)+'%', bottom: (100-item.bottomRow*100)+'%' , left: (item.leftCol*100)+'%', right: (100-item.rightCol*100)+'%' }}></div> )
     
     // change parameters depends on the page name
@@ -156,6 +148,8 @@ class Form extends React.Component {
     let fromHistory=state.fromHistory
     let showInput=state.showInput
     let inputType=state.inputType
+
+    let history=props.history
 
 
     if(props.page!==page){
@@ -189,12 +183,13 @@ class Form extends React.Component {
       showInput,
       page,
       renderedOutput:boxesDivs,
-      inputType
+      inputType,
+      history
     }
   }
   
   render() {
-    console.log('aaaaaaaaaaaaaaaaaa',this.state)
+    console.log('form class ----------: ',this.state)
     return (
       <div key={this.props.page} className="flex flex-column items-center">
 
@@ -225,6 +220,7 @@ class Form extends React.Component {
                 <MainImage
                   data={this.state.data}
                   renderedOutput={this.state.renderedOutput}
+                  type={this.state.mainImageType}
                 />
               </div>
             ):(null)

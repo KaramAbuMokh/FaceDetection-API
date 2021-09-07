@@ -10,7 +10,7 @@ class MainImage extends React.Component{
         return(
             <div className="relative mh0 h-100 w-100" >
                 {
-                    <img className='w-100 h-100'  id="myimg" src={this.props.data}/>
+                    <img className='w-100 h-100'  id="myimg" src={this.props.type==='file' ? 'data:image/jpeg;base64,'+this.props.data:this.props.data}/>
                 }
                 <div>
                     {this.props.renderedOutput }
