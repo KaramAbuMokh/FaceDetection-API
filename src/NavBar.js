@@ -1,59 +1,67 @@
 import React from "react";
 import Logo from "./Logo";
+import './navbar.css'
 
 class NavBar extends React.Component {
   
   constructor(props) {
     super(props);
 
-    this.setState({
+    this.state={
       authorized:false
-    })
+    }
   }
 
   render() {
 
     return (
-      <div className="flex justify-between">
+      <div className="flex justify-between navbar">
         <Logo />
         {this.props.page==='home' || this.props.page==='ByLink' || this.props.page==='ByLocalFile' ? (
-          <div className="ma3 flex justify-between">
-            
+          <div className="navbar-content ma3 flex justify-center">
+            <a
+              onClick={() => this.props.changePage("home")}
+              href="#0"
+              className="f3 ma2 pv2 link dim  db logout"
+            >
+              Home
+            </a>
             <a
               onClick={() => this.props.changePage("ByLink")}
               href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
+              className="f3 ma2 pv2 link dim black db"
             >
-              By Link
+              Via Link
             </a>
             <a
               onClick={() => this.props.changePage("ByLocalFile")}
               href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
+              className=" f3 ma2 pv2 link dim black db"
             >
-              By Local File
+              Via File
             </a>
             <a
               onClick={() => this.props.changePage("signin")}
               href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
+              className="f3 ma2 pv2 link dim  db logout"
             >
               Logout
             </a>
+            
           </div>
         ) : (
-          <div className="ma3 ">
+          <div className="navbar-content  ma3 flex justify-center">
             <a
               onClick={() => this.props.changePage("signin")}
               href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
+              className="f3 ma2 pv2 link dim black db"
             >
               Signin
             </a>
             <a
               onClick={() => this.props.changePage("register")}
               href="#0"
-              className="f3 ma2 pa2 w4 ba link dim black db"
+              className="f3 ma2 pv2 link dim black db"
             >
               register
             </a>

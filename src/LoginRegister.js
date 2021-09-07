@@ -8,12 +8,11 @@ class LoginRegister extends React.Component {
   }
 
   render() {
-    console.log("this.props.page", this.props.page);
     return (
       <div>
         {this.props.page === "signin" ? (
           <div>
-            <Signin changePage={this.props.changePage} />
+            <Signin setUser={this.props.setUser} changePage={this.props.changePage} />
           </div>
         ) : (
           <div>
