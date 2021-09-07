@@ -1,6 +1,6 @@
 import React from "react";
-import Signin from "./Signin";
-import Register from "./Register";
+import Signin from "./templates/Signin";
+import Register from "./templates/Register";
 
 class LoginRegister extends React.Component {
   constructor(props) {

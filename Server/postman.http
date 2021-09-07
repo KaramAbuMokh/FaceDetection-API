@@ -1,0 +1,37 @@
+POST http://localhost:8000/signin
+content-type: application/json
+
+{
+    "email": "amir@gmail.com",
+    "password": "a1234"
+}
+
+###
+
+POST http://localhost:8000/register
+content-type: application/json
+
+{
+    "id": 124,
+    "name": "amir",
+    "joining":"new Date",
+    "email": "a@gmail.com",
+    "password": 1234,
+    "cnt": 0
+}
+
+
+###
+
+POST http://localhost:8000/profile/1
+content-type: application/json
+
+
+###
+
+POST http://localhost:8000/image
+content-type: application/json
+
+{
+    "id": 123
+}

@@ -1,5 +1,5 @@
 import React from 'react'
-import './design.css'
+import '../../design.css'
 
 class HistoryImages extends React.Component{
     constructor(props){

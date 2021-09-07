@@ -1,8 +1,7 @@
 import React from "react";
-import NavBar from "./NavBar";
-import Form from "./Form";
-import FormByLink from './FormByLink'
-import LoginRegister from "./LoginRegister";
+import NavBar from "../containers/navbar/NavBar";
+import Form from "../containers/form/Form";
+import LoginRegister from "../containers/signinRegister/LoginRegister";
 import Particles from "react-tsparticles";
 import "./App.css";
 import part from './part'
