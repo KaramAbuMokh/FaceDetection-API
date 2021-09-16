@@ -4,6 +4,19 @@ const cors = require('cors')
 const {getRequestOptions} =require('./prepareAPIrequest')
 const {addToScore, getFaceBox} = require('./getBoundingBoxes')
 const {ClarifaiStub, grpc} = require("clarifai-nodejs-grpc");
+const knex = require('knex')
+
+const db =knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    port : 5432,
+    user : 'postgres',
+    password : 'alphateam',
+    database : 'postgres'
+  }
+});
+
 
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
@@ -26,6 +39,17 @@ app.use(cors())
  app.post('/signin',(req,res)=>{
     let found=false
     let resultIndex=null
+
+    // db.select('*').where('email','=',req.body.email)
+    // .from('login')
+    // .then(user=>{
+    //     if(user.length && bcrypt.compareSync(user.password, user[0].hash)){
+    //         res
+    //     }else{
+    //         res.status(400).json('wrong credentials')
+    //     }
+        
+    // })
 
     // check if email is exist
     database.users.forEach((element,index) => {
@@ -67,24 +91,58 @@ app.use(cors())
 // --------- register
 app.post('/register',(req,res)=>{
 
-    console.log(database.users)
-
     let user=req.body
-    database.users.forEach(element => {
-        if(element.email===req.body.email ){
-            
-            
-            return res.status(400).json('this email is already registered')
-        }
-    });
+    const saltRounds = 10;
+    const myPlaintextPassword = user.password.toString();
+    const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
 
-    bcrypt.hash(user.password.toString(), 10, function(err, hash) {
-        user.password=hash
-        user.id=database.users.length+1
-        database.users.unshift(user)
-        console.log(database.users)
-        res.json('success')
+
+
+
+    db.transaction(trx=>{
+        trx.insert({
+            email:user.email,
+            hash:hash
+        })
+        .into('login')
+        .returning('email')
+        .then(emailLogin=>{
+            return trx('users')
+            .returning('*')
+            .insert({
+                email:emailLogin[0],
+                name:user.name,
+                joining:new Date,
+                score:0
+            })
+            .then(user=>{
+                console.log(user)
+                res.json(user[0])
+            })
+        })
+        .then(trx.commit)
+        .catch(trx.rollback)
     })
+    .catch(err => {
+        console.log(err)
+        res.status(400).json(err)
+    })
+
+
+
+    // database.users.forEach(element => {
+    //     if(element.email===req.body.email ){
+    //         return res.status(400).json('this email is already registered')
+    //     }
+    // });
+
+    // bcrypt.hash(user.password.toString(), 10, function(err, hash) {
+    //     user.password=hash
+    //     user.id=database.users.length+1
+    //     database.users.unshift(user)
+    //     console.log(database.users)
+    //     res.json('success')
+    // })
 })
 
 
