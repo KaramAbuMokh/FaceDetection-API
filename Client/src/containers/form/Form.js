@@ -90,10 +90,17 @@ class Form extends React.Component {
     .then(response => response.json())
     .then( data => {
 
+      console.log('returned data after predection',data)
+
       let user=this.props.user
       user.history=data.history
       user.score=data.score
+      console.log('the history in form class before setUser',this.state.history)
       this.props.setUser(user)
+      this.setState({
+        history:user.history
+      })
+      console.log('the history in form class after setUser',this.state.history)
       
       this.setState({score:data.score, history:data.history,faceBox:data.faceBox})
     })
@@ -120,7 +127,6 @@ class Form extends React.Component {
   }
 
   changePath=(link,type,faceBox)=>{
-    console.log('new image')
     this.setState({
       showMainImage:true,
       data:link,
@@ -135,7 +141,7 @@ class Form extends React.Component {
   static getDerivedStateFromProps(props, state){
 
     let faceBox= state.faceBox
-    let boxesDivs = faceBox.map((item,i) => <div key={i} className='bounding-box' style={{top: (item.topRow*100)+'%', bottom: (100-item.bottomRow*100)+'%' , left: (item.leftCol*100)+'%', right: (100-item.rightCol*100)+'%' }}></div> )
+    let boxesDivs = faceBox.map((item,i) => <div key={i} className='bounding-box' style={{top: (item.toprow*100)+'%', bottom: (100-item.bottomrow*100)+'%' , left: (item.leftcol*100)+'%', right: (100-item.rightcol*100)+'%' }}></div> )
     
     // change parameters depends on the page name
     let page=state.page
@@ -187,7 +193,6 @@ class Form extends React.Component {
   }
   
   render() {
-    console.log('form class ----------: ',this.state)
     return (
       <div key={this.props.page} className="flex flex-column items-center">
 
