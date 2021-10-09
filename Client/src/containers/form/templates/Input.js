@@ -4,7 +4,6 @@ import '../../design.css'
 class Input extends React.Component{
     constructor(props){
         super(props)
-
     }
 
     render(){

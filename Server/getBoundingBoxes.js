@@ -1,10 +1,10 @@
 function boundface(boundingBox){
     
     return bounds = {
-      leftCol: Number(boundingBox.left_col)  ,
-      topRow: Number(boundingBox.top_row),
-      bottomRow: Number(boundingBox.bottom_row) ,
-      rightCol: Number(boundingBox.right_col) ,
+      leftcol: Number(boundingBox.left_col)  ,
+      toprow: Number(boundingBox.top_row),
+      bottomrow: Number(boundingBox.bottom_row) ,
+      rightcol: Number(boundingBox.right_col) ,
     };
 
   };
@@ -17,7 +17,7 @@ function addToScore(user,url,type,faceBox){
     data: url,
     faceBox
   })
-  return user
+  return user 
 }
 
 function getFaceBox(regs){
