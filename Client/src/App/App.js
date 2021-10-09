@@ -29,11 +29,12 @@ class App extends React.Component {
       user:user,
       history:user.history
     })
+
+    console.log('setUser in app class',user.history)
     
   }
 
   render() {
-    console.log('app class------: ',this.state)
     return (
       <div className="App">
         <Particles
