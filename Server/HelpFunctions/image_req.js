@@ -15,13 +15,6 @@ function returnBounds(item){
     }
 }
 
-function returnFaceBox(boxes){
-    let faceBox=[]
-    boxes.forEach(item=>{
-        faceBox.push(returnBounds(item))
-    })
-    return faceBox
-}
 
 function getHistory(imagesDataAndIDAndTypes,history){
     imagesDataAndIDAndTypes.forEach(element => {
